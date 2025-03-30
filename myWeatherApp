@@ -1,1 +1,49 @@
+import requests  # Import requests library for API calls
+from datetime import datetime  # Import datetime module
+
+def get_weather(city):
+    """Fetches weather data from OpenWeatherMap API"""
+    api_key = "96f65a8ad60e22ff71a1d96e5c04bbb1"  # Generated default api key
+    base_url = "http://api.openweathermap.org/data/2.5/weather"
+    params = {"q": city, "appid": api_key, "units": "metric"}
+    
+    response = requests.get(base_url, params=params)
+    
+    if response.status_code == 200:
+        data = response.json()
+        weather = {
+            "city": data["name"],
+            "temperature_celsius": data["main"]["temp"],
+            "humidity": data["main"]["humidity"],
+            "description": data["weather"][0]["description"]
+        }
+        return weather
+    else:
+        return None
+
+def celsius_to_fahrenheit(celsius):
+    """Converts temperature from Celsius to Fahrenheit"""
+    return (celsius * 9/5) + 32
+
+def main():
+    """Main function to get user input and display weather details"""
+    city = input("Enter city name: ")
+    weather = get_weather(city)
+    
+    if weather:
+        # Get the current date and time
+        current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        # Convert Celsius to Fahrenheit
+        temperature_fahrenheit = celsius_to_fahrenheit(weather["temperature_celsius"])
+        
+        print(f"\nWeather in {weather['city']} on {current_datetime}:")
+        print(f"Temperature: {weather['temperature_celsius']}°C / {temperature_fahrenheit:.2f}°F")
+        print(f"Humidity: {weather['humidity']}%")
+        print(f"Description: {weather['description'].capitalize()}")
+    else:
+        print("Error: Could not retrieve weather data. Please check the city name and try again.")
+
+if __name__ == "__main__":
+    main()
 
